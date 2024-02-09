@@ -5,4 +5,5 @@ export class CreateArticleDto {
     title: string;
     content: string;
     datePublished: string;
+    prediction: number;
 }
