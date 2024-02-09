@@ -64,6 +64,12 @@ export class ArticlesService {
         const article = await this.articleModel.find();
         return article;
     }
+
+    async getArticle(article: Articles): Promise<any> {
+        // Logic to get article from Cosmos DB
+        const response = await this.articleModel.findOne({ link: article.link });
+        return response;
+    }
     
     async incongruenceCheck(article: Articles): Promise<any> {
         // Logic to check if article data is incongruent

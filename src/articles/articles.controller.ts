@@ -48,4 +48,11 @@ export class ArticlesController {
         return this.articleService.incongruenceCheck(article);
     }
 
+    @Post ('getArticle')
+    async getArticle(
+        @Body()
+        article: CreateArticleDto
+        ): Promise<Articles> {
+        return this.articleService.getArticle(article);
+    }
 }
