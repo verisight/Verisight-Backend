@@ -5,77 +5,67 @@
 
 import { Injectable } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Articles } from './schemas/articles.schema';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class ArticlesService {
 
-    public articles = [
-        {
-            link: 'https://www.example.com/article-1',
-            title: 'Article 1',
-            content: 'This is the content for article 1',
-            datePublished: '2021-01-01',
-            prediction: 0
-        },
-        {
-            link: 'https://www.example.com/article-2',
-            title: 'Article 2',
-            content: 'This is the content for article 2',
-            datePublished: '2021-01-02',
-            prediction: 0
-        },
-    ];
-
-    //Make the article array public
+    constructor(
+        @InjectModel(Articles.name)
+        private articleModel: mongoose.Model<Articles>,
+    ) {}
 
     async findArticleByLink(link: string): Promise<any> {
-        // Logic to query Cosmos DB and find article by link
-        return this.articles.find((article) => article.link === link);
+        //Find the article by link from the Mongo DB
+        const response = await this.articleModel.findOne({ link: link });
+        return response;
     }
 
-    async updateArticle(link: String, updatedData: any): Promise<any> {
+    async updateArticle(link: String, article: Articles): Promise<Articles> {
         // Logic to update article in Cosmos DB
-        const articleIndex = this.articles.findIndex((article) => article.link === link);
-        this.articles[articleIndex] = updatedData;
+        const updatedArticle = await this.articleModel.findOneAndUpdate({ link: link }, article, { new: true , runValidators: true  });
+        return updatedArticle;
 
     }
 
     async updateArticlePrediction(link: String, prediction: number): Promise<any> {
         // Logic to update article prediction in Cosmos DB
-        const articleIndex = this.articles.findIndex((article) => article.link === link);
-        this.articles[articleIndex].prediction = prediction;
+        const updatedArticle = await this.articleModel.findOneAndUpdate({ link: link }, { prediction: prediction }, { new: true , runValidators: true  });
+        return updatedArticle;
     }
 
-    async createArticle(createArticleDto: CreateArticleDto): Promise<any> {
+    async createArticle(article : Articles): Promise<any> {
         // Logic to create article in Cosmos DB
-        this.articles.push(createArticleDto);
-        return this.articles;
+        await this.articleModel.create(article);
     }
 
-    async handleArticlePost(createArticleDto: CreateArticleDto): Promise<void> {
-        if (!createArticleDto.link || !createArticleDto.title || !createArticleDto.content || !createArticleDto.datePublished) {
+    async handleArticlePost(article : Articles): Promise<void> {
+        if (!article.link || !article.title || !article.content || !article.datePublished) {
             throw new Error('Invalid article data');
         }
-        const existingArticle = await this.findArticleByLink(createArticleDto.link);
+        const existingArticle = await this.findArticleByLink(article.link);
 
         if (existingArticle) {
             // Article exists, check if date published is different
-            if (existingArticle.datePublished !== createArticleDto.datePublished) {
-                return this.updateArticle(existingArticle.link, createArticleDto);
+            if (existingArticle.datePublished !== article.datePublished) {
+                this.updateArticle(existingArticle.link, article);
             }
         } else {
             // Article doesn't exist, create new article
-            this.createArticle(createArticleDto);
-            this.incongruenceCheck(createArticleDto);
+            this.createArticle(article);
+            this.incongruenceCheck(article);
             this.getAllArticles();
         }
     }
 
-    async getAllArticles(): Promise<any> {
-        return this.articles;
+    async getAllArticles(): Promise<Articles[]> {
+        const article = await this.articleModel.find();
+        return article;
     }
     
-    async incongruenceCheck(article: any): Promise<any> {
+    async incongruenceCheck(article: Articles): Promise<any> {
         // Logic to check if article data is incongruent
         if (article.title && article.content) {
             //Call a POST Function to Azure API for ML Model
