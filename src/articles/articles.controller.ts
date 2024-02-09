@@ -17,9 +17,7 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { InjectModel } from '@nestjs/mongoose';
 import { Articles } from './schemas/articles.schema';
-import mongoose from 'mongoose';
 
 @Controller('articles')
 export class ArticlesController {
@@ -31,7 +29,7 @@ export class ArticlesController {
         article: CreateArticleDto
         ): Promise<any> {
         //use await after testing
-        await this.articleService.handleArticlePost(article);
+        return this.articleService.handleArticlePost(article);
     }
 
     @Get('all')
