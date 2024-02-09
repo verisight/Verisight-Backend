@@ -18,17 +18,19 @@ export class SummaryService {
     async createSummary(createArticleDto: CreateArticleDto): Promise<void> {
         const { OpenAIClient } = require("@azure/openai");
 
+        this.articles.push(createArticleDto);
+
+        const textToSummarize = createArticleDto.content;
+
+        console.log(`Text to summarize: ${textToSummarize}`);
+
         async function main(){
             const endpoint = "https://verisightgptapi2.openai.azure.com/";
             const key = "b9bae2eb7b0f41fb865c2a03543cbeeb";
             const client = new OpenAIClient(endpoint, new AzureKeyCredential(key));
 
-            this.articles.push(createArticleDto);
-
-            const textToSummarize = createArticleDto.content;
-
             const summarizationPrompt = [`
-                Summarize the following text without losing the context:
+                Summarize the following text without losing the context. Keep it short and informative:
 
                 Text:
                 """"""
@@ -43,7 +45,7 @@ export class SummaryService {
             const deploymentName = "Verisight-gpt-35-turbo-0301";
 
             const { choices } = await client.getCompletions(deploymentName, summarizationPrompt, {
-                maxTokens: 64
+                maxTokens: 128
             });
             const completion = choices[0].text;
             console.log(`Summarization: ${completion}`);
