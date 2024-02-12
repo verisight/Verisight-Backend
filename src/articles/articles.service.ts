@@ -18,26 +18,25 @@ export class ArticlesService {
     ) {}
 
     async findArticleByLink(link: string): Promise<any> {
-        //Find the article by link from the Mongo DB
+        //Find the article by link from the MongoDB
         const response = await this.articleModel.findOne({ link: link });
         return response;
     }
 
     async updateArticle(link: String, article: Articles): Promise<Articles> {
-        // Logic to update article in Cosmos DB
+        // Logic to update article in MongoDB
         const updatedArticle = await this.articleModel.findOneAndUpdate({ link: link }, article, { new: true , runValidators: true  });
         return updatedArticle;
-
     }
 
     async updateArticlePrediction(link: String, prediction: number): Promise<any> {
-        // Logic to update article prediction in Cosmos DB
+        // Logic to update article prediction in MongoDB
         const updatedArticle = await this.articleModel.findOneAndUpdate({ link: link }, { prediction: prediction }, { new: true , runValidators: true  });
         return updatedArticle;
     }
 
     async createArticle(article : Articles): Promise<any> {
-        // Logic to create article in Cosmos DB
+        // Logic to create article in MongoDB
         await this.articleModel.create(article);
     }
 
@@ -45,18 +44,26 @@ export class ArticlesService {
         if (!article.link || !article.title || !article.content || !article.datePublished) {
             throw new Error('Invalid article data');
         }
+        
         const existingArticle = await this.findArticleByLink(article.link);
 
         if (existingArticle) {
+            console.log("Article Link exists in the DB")
             // Article exists, check if date published is different
             if (existingArticle.datePublished !== article.datePublished) {
+                console.log("Article Link exists but date is updated")
                 this.updateArticle(existingArticle.link, article);
+                this.incongruenceCheck(article);
+                return this.findArticleByLink(article.link)
+            } else {
+                return existingArticle
             }
         } else {
+            console.log("Article Link does not exist")
             // Article doesn't exist, create new article
             this.createArticle(article);
             this.incongruenceCheck(article);
-            this.getAllArticles();
+            return this.findArticleByLink(article.link)
         }
     }
 
@@ -65,9 +72,12 @@ export class ArticlesService {
         return article;
     }
 
-    async getArticle(article: Articles): Promise<any> {
+    async getArticle(link: string): Promise<any> {
         // Logic to get article from Cosmos DB
-        const response = await this.articleModel.findOne({ link: article.link });
+        if (!link) {
+            throw new Error('Invalid article link');
+        }
+        const response = await this.articleModel.findOne({ link: link });
         return response;
     }
     

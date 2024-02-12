@@ -18,6 +18,7 @@ import { Controller, Post, Body, Get } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { Articles } from './schemas/articles.schema';
+import { link } from 'fs';
 
 @Controller('articles')
 export class ArticlesController {
@@ -51,6 +52,6 @@ export class ArticlesController {
         @Body()
         article: CreateArticleDto
         ): Promise<Articles> {
-        return this.articleService.getArticle(article);
+        return this.articleService.getArticle(article.link);
     }
 }
