@@ -58,5 +58,5 @@ jobs:
         with:
           app-name: 'Verisight-Backend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_614A8EA373DB47C1A4F1192474B3ED87 }}
           package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_614A8EA373DB47C1A4F1192474B3ED87 }}
