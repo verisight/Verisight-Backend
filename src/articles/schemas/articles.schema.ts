@@ -20,6 +20,7 @@ export class Articles {
 
     @Prop()
     prediction: number;
+
 }
 
 export const ArticlesSchema = SchemaFactory.createForClass(Articles);

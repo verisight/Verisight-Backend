@@ -17,9 +17,29 @@ export class ArticlesService {
         private articleModel: mongoose.Model<Articles>,
     ) {}
 
-    async findArticleByLink(link: string): Promise<any> {
+    async findArticleByLink(link1: string): Promise<any> {
         //Find the article by link from the MongoDB
-        const response = await this.articleModel.findOne({ link: link });
+        //Check if MongoDB is connected
+        if (!this.articleModel) {
+            throw new Error('MongoDB not connected');
+        }
+        const response = await this.articleModel.findOne({ link: link1 });
+        if (!response) {
+            console.log('Article not found');
+        }
+        return response;
+    }
+
+    async findArticleByDto(article: CreateArticleDto): Promise<any> {
+        //Find the article by link from the MongoDB
+        //Check if MongoDB is connected
+        if (!this.articleModel) {
+            throw new Error('MongoDB not connected');
+        }
+        const response = await this.articleModel.findOne({ link: article.link });
+        if (!response) {
+            console.log('Article not found');
+        }
         return response;
     }
 
@@ -37,11 +57,15 @@ export class ArticlesService {
 
     async createArticle(article : Articles): Promise<any> {
         // Logic to create article in MongoDB
+        //Check if MongoDB is connected
+        if (!this.articleModel) {
+            throw new Error('MongoDB not connected');
+        }
         await this.articleModel.create(article);
     }
 
     async handleArticlePost(article : Articles): Promise<void> {
-        if (!article.link || !article.title || !article.content || !article.datePublished) {
+        if (!article.link && !article.title && !article.content && !article.datePublished) {
             throw new Error('Invalid article data');
         }
         
