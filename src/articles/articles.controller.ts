@@ -52,6 +52,6 @@ export class ArticlesController {
         @Body()
         article: CreateArticleDto
         ): Promise<Articles> {
-        return this.articleService.getArticle(article.link);
+        return this.articleService.findArticleByDto(article);
     }
 }
