@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CrosscheckService } from './crosscheck.service';
 import { CrosscheckController } from './crosscheck.controller';
+import { CrosscheckService } from './crosscheck.service';
 
 @Module({
-  providers: [CrosscheckService],
-  controllers: [CrosscheckController]
+  controllers: [CrosscheckController],
+  providers: [CrosscheckService]
 })
 export class CrosscheckModule {}
