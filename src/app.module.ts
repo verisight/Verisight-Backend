@@ -5,6 +5,7 @@ import { ArticlesModule } from './articles/articles.module';
 import { SummaryModule } from './summary/summary.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CrosscheckModule } from './crosscheck/crosscheck.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     ConfigModule.forRoot({
       envFilePath: './.env',
       isGlobal: true,
-    })
+    }),
+    CrosscheckModule
   ],
   controllers: [AppController],
   providers: [AppService],
