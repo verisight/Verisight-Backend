@@ -8,7 +8,11 @@ import { Document } from '@langchain/core/documents';
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnableMap, RunnablePassthrough } from "@langchain/core/runnables";
 import { z } from "zod";
-import { StructuredTool } from '@langchain/core/tools';
+import { StructuredTool } from "@langchain/core/tools";
+import { formatToOpenAITool } from "@langchain/openai";
+import { JsonOutputKeyToolsParser } from "langchain/output_parsers";
+
+
 
 
 class CitedAnswer extends StructuredTool {
@@ -35,12 +39,23 @@ class CitedAnswer extends StructuredTool {
 export class CrosscheckService {
   //using lancgchain bingserpapi and langchain citations to get citations
   async getCrosscheck(article: { headline: string, body: string }): Promise<any> {
+
+    const asOpenAITool = formatToOpenAITool(new CitedAnswer());
+    const tools = [asOpenAITool];
+
+    
+
     const llm = new ChatOpenAI({
       temperature: 0.5,
       azureOpenAIApiKey: "59d96e10c65d4503943ecfb411257eba",
       azureOpenAIApiVersion: "2023-12-01-preview",
       azureOpenAIApiDeploymentName: "Verisight-gpt35-turbo-1106",
       azureOpenAIBasePath: "https://verisightgptapi.openai.azure.com/openai/deployments",
+    });
+
+    const llmWithTool = llm.bind({
+      tools: tools,
+      tool_choice: asOpenAITool
     });
 
     const retriever = new BingNewsAPIRetriever({
@@ -58,23 +73,29 @@ export class CrosscheckService {
       ["human", "{question}"],
     ])
 
+    const outputParser = new JsonOutputKeyToolsParser({ keyName: "cited_answer", returnSingle: true });
 
-    const formatDocs = (input: Record<string, any>): string => {
-      const { docs } = input;
-
-      return "\n\n" + docs.map((doc: Document) => `Article Headline: ${doc.metadata.title}\nArticle Snippet: ${doc.pageContent}`).join("\n\n");
+    const formatDocsWithId = (docs: Array<Document>): string => {
+      return "\n\n" + docs.map((doc: Document, idx: number) => `Source ID: ${idx}\nArticle title: ${doc.metadata.title}\nArticle Snippet: ${doc.pageContent}`).join("\n\n");
     }
-
-    const answerChain = prompt.pipe(llm).pipe(new StringOutputParser())
-
+    // subchain for generating an answer once we've done retrieval
+    const answerChain = prompt.pipe(llmWithTool).pipe(outputParser);
     const map = RunnableMap.from({
       question: new RunnablePassthrough(),
       docs: retriever,
     })
-
-    const chain = map.assign({ context: formatDocs }).assign({ answer: answerChain }).pick(["answer", "docs"])
+    // complete chain that calls the retriever -> formats docs to string -> runs answer subchain -> returns just the answer and retrieved docs.
+    const chain = map
+      .assign({ context: (input: { docs: Array<Document> }) => formatDocsWithId(input.docs) })
+      .assign({ cited_answer: answerChain })
+      .pick(["cited_answer", "docs"])
+    
     const question = `Headline: '${article.headline}' Body: '${article.body}'`
     const result = await chain.invoke(question)
     return result
+
+
   }
+
+
 }
