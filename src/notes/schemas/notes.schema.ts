@@ -16,9 +16,6 @@ export class Notes {
     username: string;
 
     @Prop()
-    date: string;
-
-    @Prop()
     noteContent: string;
 
     @Prop()
