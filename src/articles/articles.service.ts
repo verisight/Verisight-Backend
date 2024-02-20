@@ -1,8 +1,3 @@
-// import { Injectable } from '@nestjs/common';
-
-// @Injectable()
-// export class ArticlesService {}
-
 import { Injectable } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { InjectModel } from '@nestjs/mongoose';
