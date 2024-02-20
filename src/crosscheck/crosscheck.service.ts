@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BingNewsAPIRetriever } from 'src/crosscheck/bingserpapi'
+import { BingNewsAPIRetriever } from './bingserpapi'
 // import { TavilySearchAPIRetriever } from "@langchain/community/retrievers/tavily_search_api";
 // import { AzureChatOpenAI } from '@langchain/azure-openai';
 import { ChatOpenAI } from "@langchain/openai";
