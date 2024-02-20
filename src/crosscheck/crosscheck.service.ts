@@ -5,21 +5,22 @@ import { BingNewsAPIRetriever } from './bingserpapi'
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { Document } from '@langchain/core/documents';
-import { StringOutputParser } from "@langchain/core/output_parsers";
+// import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnableMap, RunnablePassthrough } from "@langchain/core/runnables";
 import { z } from "zod";
 import { StructuredTool } from "@langchain/core/tools";
 import { formatToOpenAITool } from "@langchain/openai";
 import { JsonOutputKeyToolsParser } from "langchain/output_parsers";
+import { CreateArticleDto } from 'src/articles/dto/create-article.dto';
 
 
-
-
+// Define the tool to be used in the chain
 class CitedAnswer extends StructuredTool {
-  name = "cited_answer";
+  name = "cited_answer"; // name of the tool
 
-  description = "Answer the user question based only on the given sources, and cite the sources used.";
+  description = "Answer the user question based only on the given sources, and cite the sources used."; // description of the tool
 
+  // define the schema for the tool
   schema = z.object({
     answer: z.string().describe("The answer to the user question, which is based only on the given sources."),
     citations: z.array(z.number()).describe("The integer IDs of the SPECIFIC sources which justify the answer.")
@@ -38,7 +39,8 @@ class CitedAnswer extends StructuredTool {
 @Injectable()
 export class CrosscheckService {
   //using lancgchain bingserpapi and langchain citations to get citations
-  async getCrosscheck(article: { headline: string, body: string }): Promise<any> {
+  async getCrosscheck(article: CreateArticleDto): Promise<any> {
+
 
     const asOpenAITool = formatToOpenAITool(new CitedAnswer());
     const tools = [asOpenAITool];
@@ -53,11 +55,13 @@ export class CrosscheckService {
       azureOpenAIBasePath: "https://verisightgptapi.openai.azure.com/openai/deployments",
     });
 
+    // bind the tool to the llm and set the tool_choice to the OpenAI tool
     const llmWithTool = llm.bind({
       tools: tools,
       tool_choice: asOpenAITool
     });
 
+    // set up the retriever
     const retriever = new BingNewsAPIRetriever({
       apiKey: "e1af43a334044d9d9880df246cd8aec4",
       k: 3,
@@ -68,13 +72,16 @@ export class CrosscheckService {
     //     k: 6,
     // })
 
+    // set up the prompt
     const prompt = ChatPromptTemplate.fromMessages([
       ["system", "You're a helpful AI assistant. Given a headline, body, and snippets from various web news articles, determine if there are any discrepancies between the provided news article and the information found in the other articles. If you can't find any discrepencies, just say you couldn't find any discrepencies and say the article is consistent with the other articles on the same topic.\n\nHere are the web articles:{context}"],
       ["human", "{question}"],
     ])
 
+    // set up the output parser
     const outputParser = new JsonOutputKeyToolsParser({ keyName: "cited_answer", returnSingle: true });
 
+    // format the docs (web article) to a string
     const formatDocsWithId = (docs: Array<Document>): string => {
       return "\n\n" + docs.map((doc: Document, idx: number) => `Source ID: ${idx}\nArticle title: ${doc.metadata.title}\nArticle Snippet: ${doc.pageContent}`).join("\n\n");
     }
@@ -90,7 +97,7 @@ export class CrosscheckService {
       .assign({ cited_answer: answerChain })
       .pick(["cited_answer", "docs"])
     
-    const question = `Headline: '${article.headline}' Body: '${article.body}'`
+    const question = `Headline: '${article.title}' Body: '${article.content}'`
     const result = await chain.invoke(question)
     return result
 
