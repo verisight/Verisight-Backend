@@ -59,7 +59,7 @@ export class ArticlesService {
         await this.articleModel.create(article);
     }
 
-    async handleArticlePost(article : Articles): Promise<void> {
+    async handleArticlePost(article : Articles): Promise<any> {
         if (!article.link && !article.title && !article.content && !article.datePublished) {
             throw new Error('Invalid article data');
         }
