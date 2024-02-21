@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { Notes } from './schemas/notes.schema';
 import mongoose from 'mongoose';
+import { NoteAlreadyExists } from './exceptions/note-already-exists.exception';
 
 
 @Injectable()
@@ -25,7 +26,8 @@ export class NotesService {
         if (!this.noteModel) {
             throw new Error('MongoDB not connected');
         }
-
+        const existingNote = await this.noteModel.findOne({ noteContent: note.noteContent });
+        if (existingNote) throw new NoteAlreadyExists();
         const response = await this.noteModel.create(note);
 
         if (!response) {
