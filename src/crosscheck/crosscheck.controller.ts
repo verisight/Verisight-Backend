@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CrosscheckService } from './crosscheck.service';
-import { CreateArticleDto } from 'src/articles/dto/create-article.dto';
+import { CreateArticleDto } from '../articles/dto/create-article.dto';
 
 @Controller('crosscheck')
 export class CrosscheckController {
