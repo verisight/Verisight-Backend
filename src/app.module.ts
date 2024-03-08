@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CrosscheckModule } from './crosscheck/crosscheck.module';
 import { NotesModule } from './notes/notes.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -20,9 +22,23 @@ import { NotesModule } from './notes/notes.module';
       isGlobal: true,
     }),
     CrosscheckModule,
-    NotesModule
+    NotesModule,
+    ThrottlerModule.forRoot([{
+      name: 'short-term',
+      ttl: 1000,
+      limit: 10,
+    },
+    {
+      name: 'long-term',
+      ttl: 60000,
+      limit: 100,
+    }
+  ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard,
+  }],
 })
 export class AppModule {}
