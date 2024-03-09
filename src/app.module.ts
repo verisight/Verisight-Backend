@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
+import { AuthModule } from './auth/auth.module';
 import { ArticlesModule } from './articles/articles.module';
 import { SummaryModule } from './summary/summary.module';
 import { ConfigModule } from '@nestjs/config';
@@ -12,7 +12,7 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-  
+    AuthModule,
     ArticlesModule, 
     SummaryModule,
     MongooseModule.forRoot("mongodb+srv://pragash:PPT01102005@cluster0.9dpn1el.mongodb.net/?retryWrites=true&w=majority"),
@@ -22,9 +22,10 @@ import { UsersModule } from './users/users.module';
     }),
     CrosscheckModule,
     NotesModule,
-    UsersModule
+    UsersModule, //added a comma 
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
+

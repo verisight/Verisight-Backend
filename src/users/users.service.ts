@@ -9,8 +9,8 @@ export class UsersService {
   async insertUser(userName: string, password: string,email:string,designation:string,profilePicture:string) {
     const username = userName.toLowerCase();
     const newUser = new this.userModel({
-      username,
-      password,
+        username,
+        password,
         email,
         designation,
         profilePicture
@@ -19,9 +19,9 @@ export class UsersService {
     return newUser;
   }
 
-  async getUser(email: string) {
-   
-    const user = await this.userModel.findOne({ email });
+  async getUser(userName: string) {
+    const username = userName.toLowerCase();
+    const user = await this.userModel.findOne({ username });
     return user;
   }
 }

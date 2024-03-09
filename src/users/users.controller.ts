@@ -8,19 +8,25 @@ import { AuthenticatedGuard } from 'src/auth/authenticated.guard.ts';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+
+  //sign up 
+
   @Post('/signup')
   async addUser(
-    @Body('password') userPassword: string,
+    
     @Body('username') userName: string,
+    @Body('password') userPassword: string,
     @Body('email') email: string,
     @Body('designation') designation: string,
     @Body('profilePicture') profilePicture: string,
   ) {
+
+
     const hashRounds = 10;
     const hashedPassword = await bcrypt.hash(userPassword, hashRounds);
     const result = await this.usersService.insertUser(
       userName,
-      hashedPassword,
+       hashedPassword,
         email,
         designation,
         profilePicture
@@ -34,6 +40,8 @@ export class UsersController {
         profilePicture: result.profilePicture
     };
   }
+
+
   //Login
   @UseGuards(LocalAuthGuard)
   @Post('/login')
@@ -47,7 +55,9 @@ export class UsersController {
       @Get('/protected')
       getHello(@Request() req): string {
         return req.user;
+        
       }
+    
 
       // logout
       @Get('/logout')
