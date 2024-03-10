@@ -71,8 +71,8 @@ export class ArticlesService {
             // Article exists, check if date published is different
             if (existingArticle.datePublished !== article.datePublished) {
                 console.log("Article Link exists but date is updated")
-                this.updateArticle(existingArticle.link, article);
-                this.incongruenceCheck(article);
+                await this.updateArticle(existingArticle.link, article);
+                await this.incongruenceCheck(article);
                 return this.findArticleByLink(article.link)
             } else {
                 return existingArticle
@@ -80,8 +80,8 @@ export class ArticlesService {
         } else {
             console.log("Article Link does not exist")
             // Article doesn't exist, create new article
-            this.createArticle(article);
-            this.incongruenceCheck(article);
+            await this.createArticle(article);
+            await this.incongruenceCheck(article);
             return this.findArticleByLink(article.link)
         }
     }
@@ -125,7 +125,7 @@ export class ArticlesService {
 
             const url = "https://incongruence-detect.eastus.inference.ml.azure.com/score";
 
-            fetch(url, {
+            await fetch(url, {
             method: "POST",
             body: JSON.stringify(requestBody),
             headers: requestHeaders
@@ -133,7 +133,7 @@ export class ArticlesService {
                 .then(async (response) => {
                     if (response.ok) {
                         const jsonResponse = await response.json();
-                        this.updateArticlePrediction(article.link, jsonResponse.prediction);
+                        await this.updateArticlePrediction(article.link, jsonResponse.prediction);
                         return jsonResponse;
                     } else {
                         // Print the headers - they include the request ID and the timestamp, which are useful for debugging the failure
