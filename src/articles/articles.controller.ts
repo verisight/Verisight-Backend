@@ -1,24 +1,9 @@
-// import { Controller, Post } from '@nestjs/common';
-
-// @Controller('articles')
-// export class ArticlesController {
-//     /*
-//     @POST for creating a new article
-//     */
-
-//     @Post()
-//     create() {
-//         return 'This action adds a new article';
-//     }
-// }
-
-// articles.controller.ts
-
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { Articles } from './schemas/articles.schema';
 import { link } from 'fs';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 
 @Controller('articles')
 export class ArticlesController {
