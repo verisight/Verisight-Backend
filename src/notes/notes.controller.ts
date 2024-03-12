@@ -8,7 +8,7 @@ export class NotesController {
     /* 
     POST Method to create a new note for a specific article link
     GET Method to retrieve all notes for a specific article link
-    PUT Method to upvote a specific note
+    PUT Method to upvote a specific note if not already voted. If voted then negate the vote
     DELETE Method to delete a specific note
     Find the usernote by userID
      */
@@ -34,7 +34,7 @@ export class NotesController {
         return this.noteService.getAllNotesForArticle(note);
     }
 
-    // PUT Method to upvote a specific note
+    // PUT Method to upvote a specific note if not already voted. If voted then negate the vote
     @Post('upvote')
     async upvoteNote(
         @Body()

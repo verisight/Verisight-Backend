@@ -1,106 +1,133 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateNoteDto } from './dto/create-note.dto';
+import { upvoteDto } from './dto/upvote.dto';
 import { Notes } from './schemas/notes.schema';
+import { UpvoteTracking } from './schemas/upvote.schema';
 import mongoose from 'mongoose';
 import { NoteAlreadyExists } from './exceptions/note-already-exists.exception';
 
-
 @Injectable()
 export class NotesService {
-    /* 
+  /* 
     POST Method to create a new note for a specific article link
     GET Method to retrieve all notes for a specific article link
-    PUT Method to upvote a specific note
+    PUT Method to upvote a specific note if not already voted. If voted then negate the vote
     DELETE Method to delete a specific note
      */
 
-    constructor(
-        @InjectModel(Notes.name)
-        private noteModel: mongoose.Model<Notes>,
-    ) {}
+  constructor(
+    @InjectModel(Notes.name)
+    private noteModel: mongoose.Model<Notes>,
 
-    // POST Method to create a new note for a specific article link
-    async createNoteForArticle(note: CreateNoteDto): Promise<any> {
-        
-        if (!this.noteModel) {
-            throw new Error('MongoDB not connected');
-        }
-        const existingNote = await this.noteModel.findOne({ noteContent: note.noteContent });
-        if (existingNote) throw new NoteAlreadyExists();
-        const response = await this.noteModel.create(note);
+    @InjectModel(UpvoteTracking.name)
+    private upvoteModel: mongoose.Model<UpvoteTracking>,
+  ) {}
 
-        if (!response) {
-            console.log('Note not created');
-        }
+  // POST Method to create a new note for a specific article link
+  async createNoteForArticle(note: CreateNoteDto): Promise<any> {
+    if (!this.noteModel) {
+      throw new Error('MongoDB not connected');
+    }
+    const existingNote = await this.noteModel.findOne({
+      noteContent: note.noteContent,
+    });
+    if (existingNote) throw new NoteAlreadyExists();
+    const response = await this.noteModel.create(note);
 
-        return response;
+    if (!response) {
+      console.log('Note not created');
     }
 
-    // GET Method to retrieve all notes for a specific article link
-    async getAllNotesForArticle(note: CreateNoteDto): Promise<Notes[]> {
+    return response;
+  }
 
-        if (!this.noteModel) {
-            throw new Error('MongoDB not connected');
-        }
-
-        // Find all notes for a specific article link
-        const response = await this.noteModel.find({ articleLink: note.articleLink });
-
-        if (!response) {
-            console.log('Note not found');
-        }
-
-        return response;
+  // GET Method to retrieve all notes for a specific article link
+  async getAllNotesForArticle(note: CreateNoteDto): Promise<Notes[]> {
+    if (!this.noteModel || !this.upvoteModel) {
+      throw new Error('MongoDB not connected');
     }
 
-    // PUT Method to upvote a specific note
-    async upvoteNoteForArticle(note: CreateNoteDto): Promise<Notes> {
+    // Find all notes for a specific article link
+    const response = await this.noteModel.find({
+      articleLink: note.articleLink,
+    });
 
-        if (!this.noteModel) {
-            throw new Error('MongoDB not connected');
-        }
-
-        // Find the note by ID and update the upvote count
-        const response = await this.noteModel.findOneAndUpdate({ _id: note._id }, { upvote: note.upvote + 1 }, { new: true, runValidators: true });
-
-        if (!response) {
-            console.log('Note not upvoted');
-        }
-
-        return response;
+    if (!response) {
+      console.log('Note not found');
     }
 
-    // DELETE Method to delete a specific note
-    async deleteNoteForArticle(note: CreateNoteDto): Promise<Notes> {
+    return response;
+  }
 
-        if (!this.noteModel) {
-            throw new Error('MongoDB not connected');
-        }
-
-        // Find the note by ID and delete it
-        const response = await this.noteModel.findOneAndDelete({ _id: note._id });
-
-        if (!response) {
-            console.log('Note not deleted');
-        }
-
-        return response;
+  // PUT Method to upvote a specific note if not already voted. If voted then negate the vote
+  async upvoteNoteForArticle(note: CreateNoteDto): Promise<any> {
+    if (!this.noteModel || !this.upvoteModel) {
+      throw new Error('MongoDB not connected');
     }
 
-    // Find the usernote by userID
-    async findUserNoteByUserID(note: CreateNoteDto): Promise<Notes> {
-        if (!this.noteModel) {
-            throw new Error('MongoDB not connected');
-        }
+    //Before allowing a user to upvote a user note, check if there's already an entry in the upvote table for the current user and the note they are trying to upvote.
+    //If there's no existing upvote entry, allow the user to upvote the user note. When processing the upvote, insert a new record into the upvote table with the user's ID and the note's ID.
 
-        // Find the note by userID
-        const response = await this.noteModel.findOne({ userId: note.userId });
-
-        if (!response) {
-            console.log('User ID not found');
-        }
-
-        return response;
+    const existingUpvote = await this.upvoteModel.findOne({
+      noteId: note._id,
+      userId: note.userId,
+    });
+    if (existingUpvote) {
+      const response = await this.noteModel.findOneAndUpdate(
+        { _id: note._id },
+        { $inc: { upvote: -1 } },
+      );
+      await this.upvoteModel.findOneAndDelete({
+        noteId: note._id,
+        userId: note.userId,
+      });
+      if (!response) {
+        console.log('Note not upvoted');
+      }
+      return false;
+    } else {
+      const response = await this.noteModel.findOneAndUpdate(
+        { _id: note._id },
+        { $inc: { upvote: 1 } },
+      );
+      await this.upvoteModel.create({ noteId: note._id, userId: note.userId });
+      if (!response) {
+        console.log('Note not upvoted');
+      }
+      return true;
     }
+  }
+
+  // DELETE Method to delete a specific note
+  async deleteNoteForArticle(note: CreateNoteDto): Promise<Notes> {
+    if (!this.noteModel) {
+      throw new Error('MongoDB not connected');
+    }
+
+    // Find the note by ID and delete it
+    const response = await this.noteModel.findOneAndDelete({ _id: note._id });
+
+    if (!response) {
+      console.log('Note not deleted');
+    }
+
+    return response;
+  }
+
+  // Find the usernote by userID
+  async findUserNoteByUserID(note: CreateNoteDto): Promise<Notes> {
+    if (!this.noteModel) {
+      throw new Error('MongoDB not connected');
+    }
+
+    // Find the note by userID
+    const response = await this.noteModel.findOne({ userId: note.userId });
+
+    if (!response) {
+      console.log('User ID not found');
+    }
+
+    return response;
+  }
 }
