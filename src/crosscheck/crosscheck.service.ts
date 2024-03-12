@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { BingNewsAPIRetriever } from './bingserpapi'
-// import { TavilySearchAPIRetriever } from "@langchain/community/retrievers/tavily_search_api";
+// import { BingNewsAPIRetriever } from './bingserpapi'
+import { TavilySearchAPIRetriever } from "@langchain/community/retrievers/tavily_search_api";
 // import { AzureChatOpenAI } from '@langchain/azure-openai';
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from '@langchain/core/prompts';
@@ -62,19 +62,19 @@ export class CrosscheckService {
     });
 
     // set up the retriever
-    const retriever = new BingNewsAPIRetriever({
-      apiKey: "e1af43a334044d9d9880df246cd8aec4",
-      k: 3,
-    })
-
-    // const retriever = new TavilySearchAPIRetriever({
-    //     apiKey: "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",
-    //     k: 6,
+    // const retriever = new BingNewsAPIRetriever({
+    //   apiKey: "e1af43a334044d9d9880df246cd8aec4",
+    //   k: 10,
     // })
+
+    const retriever = new TavilySearchAPIRetriever({
+        apiKey: "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",
+        k: 6,
+    })
 
     // set up the prompt
     const prompt = ChatPromptTemplate.fromMessages([
-      ["system", "You're a helpful AI assistant. Given a headline, body, and snippets from various web news articles, determine if there are any discrepancies between the provided news article and the information found in the other articles. If you can't find any discrepencies, just say you couldn't find any discrepencies and say the article is consistent with the other articles on the same topic.\n\nHere are the web articles:{context}"],
+      ["system", "As an AI assistant, your task is to analyze a given news article, including its headline and body. Cross-reference the content with snippets from various web sources to identify any inconsistencies. Should discrepancies arise, detail the specific differences. If no inconsistencies are found, confirm the article’s consistency with other reports on the subject. \n\nHere are the web articles:{context}"],
       ["human", "{question}"],
     ])
 
