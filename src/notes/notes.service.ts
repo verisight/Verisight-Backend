@@ -19,6 +19,8 @@ export class NotesService {
   constructor(
     @InjectModel(Notes.name)
     private noteModel: mongoose.Model<Notes>,
+
+    @InjectModel(UpvoteTracking.name)
     private upvoteModel: mongoose.Model<UpvoteTracking>,
   ) {}
 
