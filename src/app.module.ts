@@ -15,33 +15,36 @@ import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     AuthModule,
-    ArticlesModule, 
+    ArticlesModule,
     SummaryModule,
-    MongooseModule.forRoot("mongodb+srv://pragash:PPT01102005@cluster0.9dpn1el.mongodb.net/?retryWrites=true&w=majority"),
     ConfigModule.forRoot({
       envFilePath: './.env',
       isGlobal: true,
     }),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     CrosscheckModule,
     NotesModule,
-    UsersModule, //added a comma 
-    ThrottlerModule.forRoot([{
-      name: 'short-term',
-      ttl: 1000,
-      limit: 10,
-    },
-    {
-      name: 'long-term',
-      ttl: 60000,
-      limit: 100,
-    }
-  ]),
+    UsersModule, //added a comma
+    ThrottlerModule.forRoot([
+      {
+        name: 'short-term',
+        ttl: 1000,
+        limit: 10,
+      },
+      {
+        name: 'long-term',
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
   ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: ThrottlerGuard,
-  }],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
-
