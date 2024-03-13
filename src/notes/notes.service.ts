@@ -49,13 +49,15 @@ export class NotesService {
     }
 
     // Find all notes for a specific article link
-    const response = await this.noteModel.find({
+    let response = await this.noteModel.find({
       articleLink: note.articleLink,
     });
 
     if (!response) {
       console.log('Note not found');
     }
+
+    response = response.sort((a, b) => b.upvote - a.upvote);
 
     return response;
   }
@@ -148,5 +150,24 @@ export class NotesService {
     }
 
     return true;
+  }
+
+  // Get most upvoted note
+  async getFeaturedNoteForArticle(note: CreateNoteDto): Promise<Notes> {
+    if (!this.noteModel) {
+      throw new Error('MongoDB not connected');
+    }
+
+    // Find the note by userID
+    const response = await this.noteModel.find({
+      articleLink: note.articleLink,
+    });
+
+    if (!response) {
+      console.log(response);
+    }
+
+    response.sort((a, b) => b.upvote - a.upvote);
+    return response[0];
   }
 }
