@@ -2,6 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { Notes } from './schemas/notes.schema';
+import { upvoteDto } from './dto/upvote.dto';
 
 @Controller('notes')
 export class NotesController {
@@ -59,6 +60,15 @@ export class NotesController {
         note: CreateNoteDto
         ): Promise<Notes> {
         return this.noteService.findUserNoteByUserID(note);
+    }
+
+    // Get if note is upvoted by user
+    @Post('isUpvoted')
+    async isUpvoted(
+        @Body()
+        note: upvoteDto
+        ): Promise<any> {
+        return this.noteService.isNoteUpvotedByUser(note);
     }
 
 }

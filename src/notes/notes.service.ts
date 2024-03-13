@@ -130,4 +130,23 @@ export class NotesService {
 
     return response;
   }
+
+  // Get if note is upvoted by user
+  async isNoteUpvotedByUser(note: upvoteDto): Promise<boolean> {
+    if (!this.upvoteModel) {
+      throw new Error('MongoDB not connected');
+    }
+
+    // Find the note by userID
+    const response = await this.upvoteModel.findOne({
+      noteId: note.noteId,
+      userId: note.userId,
+    });
+
+    if (!response) {
+      return false;
+    }
+
+    return true;
+  }
 }
