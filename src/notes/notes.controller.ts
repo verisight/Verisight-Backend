@@ -71,4 +71,12 @@ export class NotesController {
         return this.noteService.isNoteUpvotedByUser(note);
     }
 
+    @Post('featuredNote')
+    async featuredNote(
+        @Body()
+        note: CreateNoteDto
+        ): Promise<Notes> {
+        return this.noteService.getFeaturedNoteForArticle(note);
+    }
+
 }
