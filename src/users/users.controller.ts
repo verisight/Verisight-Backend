@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Post, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { LocalAuthGuard } from 'src/auth/local.auth.guard';
@@ -21,7 +21,7 @@ export class UsersController {
     @Body('profilePicture') profilePicture: string,
   ) {
 
-
+try{
     const hashRounds = 10;
     const hashedPassword = await bcrypt.hash(userPassword, hashRounds);
     const result = await this.usersService.insertUser(
@@ -39,25 +39,50 @@ export class UsersController {
         designation: result.designation,
         profilePicture: result.profilePicture
     };
+  } catch (error) {
+    // Handle errors
+    throw new BadRequestException('Failed to register user');
   }
+}
 
+  //login 
 
-  //Login
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-      login(@Request() req): any {
-        return {User: req.user,
-                msg: 'User logged in'};
-      }
+  async login(@Request() req): Promise<any> {
+    try {
+      return { user: req.user, message: 'User logged in' };
+    } catch (error) {
+ 
+      return { error: 'User Login Failed' };
+    }
+  }
+      
 
         //Protected route
-      @UseGuards(AuthenticatedGuard)
-      @Get('/protected')
-      getHello(@Request() req): string {
-        return req.user;
         
-      }
-    
+        @UseGuards(AuthenticatedGuard)
+        @Get('/protected')
+        async getHello(@Request() req): Promise<any> {
+          try {
+      
+            const user = req.user;
+            if (!user) {
+              throw new NotFoundException('User not found');
+            }
+            return user;
+          } catch (error) {
+      
+            if (error instanceof NotFoundException) {
+
+              return { error: error.message };
+            } else {
+      
+              return { error: 'An error occurred while processing the request' };
+            }
+          }
+        }
+      
 
       // logout
       @Get('/logout')
@@ -66,4 +91,28 @@ export class UsersController {
           return { msg: 'The user session has ended' }
         }
 
+
+
+
+
+
+
+//change user password
+        @Post('/change-user-password')
+  async changePassword(
+    @Body('username') username: string,
+    @Body('oldPassword') oldPassword: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    try {
+      await this.usersService.changeUserPassword(username, oldPassword,newPassword);
+      return { message: 'Password changed successfully' };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return { error: 'User not found' };
+      }
+      return { error: 'Failed to change password' };
+    }
+  }
 }
+

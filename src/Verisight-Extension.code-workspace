@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../Verisight-Extension"
+		},
+		{
+			"name": "Verisight-Backend",
+			"path": ".."
+		},
+		{
+			"name": "Verisight-Website-V2-1",
+			"path": "../../Verisight-Website-V2-1"
+		}
+	],
+	"settings": {}
+}
