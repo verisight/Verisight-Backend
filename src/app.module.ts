@@ -11,6 +11,7 @@ import { NotesModule } from './notes/notes.module';
 import { UsersModule } from './users/users.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { APP_GUARD } from '@nestjs/core';
         ttl: 60000,
         limit: 100,
       },
-    ]),
+    ]), EmailModule,
   ],
   controllers: [AppController],
   providers: [
