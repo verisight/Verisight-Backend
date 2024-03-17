@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -11,9 +11,11 @@ import { NotesModule } from './notes/notes.module';
 import { UsersModule } from './users/users.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
+    MailModule,
     AuthModule,
     ArticlesModule,
     SummaryModule,
@@ -36,7 +38,7 @@ import { APP_GUARD } from '@nestjs/core';
         ttl: 60000,
         limit: 100,
       },
-    ]),
+    ]), MailModule,
   ],
   controllers: [AppController],
   providers: [

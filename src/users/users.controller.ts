@@ -31,6 +31,8 @@ try{
         designation,
         profilePicture
     );
+
+   
     return {
       msg: 'User successfully registered',
       userId: result.id,
