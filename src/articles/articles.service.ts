@@ -3,12 +3,14 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Articles } from './schemas/articles.schema';
 import mongoose from 'mongoose';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ArticlesService {
   constructor(
     @InjectModel(Articles.name)
     private articleModel: mongoose.Model<Articles>,
+    private configService: ConfigService,
   ) {}
 
   async findArticleByLink(link1: string): Promise<any> {
@@ -129,7 +131,7 @@ export class ArticlesService {
       });
 
       // Replace this with the primary/secondary key or AMLToken for the endpoint
-      const apiKey = 'nS0cCwq6HjzabpBKJ9lu0MqrSCvCBdbW';
+      const apiKey = this.configService.get<string>('INCONGRUENCE_API_KEY');
       if (!apiKey) {
         throw new Error('A key should be provided to invoke the endpoint');
       }
@@ -139,8 +141,7 @@ export class ArticlesService {
       // Remove this line to have the request observe the endpoint traffic rules
       requestHeaders.append('azureml-model-deployment', 'stance-detect-1');
 
-      const url =
-        'https://incongruence-detect.eastus.inference.ml.azure.com/score';
+      const url = this.configService.get<string>('INCONGRUENCE_ENDPOINT');
 
       await fetch(url, {
         method: 'POST',

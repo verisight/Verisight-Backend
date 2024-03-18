@@ -1,18 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateArticleDto } from '../articles/dto/create-article.dto';
 import { AzureKeyCredential } from '@azure/openai';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SummaryService {
-  private articles = [
-    {
-      link: 'https://www.example.com/article-1',
-      title: 'Article 1',
-      content: 'This is the content for article 1',
-      datePublished: '2021-01-01',
-      prediction: 0,
-    },
-  ];
+  constructor(private configService: ConfigService) {}
 
   async createSummary(createArticleDto: CreateArticleDto): Promise<any> {
     const { OpenAIClient } = require('@azure/openai');
@@ -20,17 +13,17 @@ export class SummaryService {
     //Initialise the completion variable
     let completion = 'Hello';
 
-    this.articles.push(createArticleDto);
-
-    //Remove any \" from the content
+    const endpoint = this.configService.get('SUMMARY_ENDPOINT');
+    const key = this.configService.get('SUMMARY_API_KEY');
+    const deploymentName = this.configService.get(
+      'SUMMARY_API_DEPLOYMENT_NAME',
+    );
 
     const textToSummarize = createArticleDto.content;
 
     completion = await main();
 
     async function main() {
-      const endpoint = 'https://verisightgptapi2.openai.azure.com/';
-      const key = 'b9bae2eb7b0f41fb865c2a03543cbeeb';
       const client = new OpenAIClient(endpoint, new AzureKeyCredential(key));
 
       const summarizationPrompt = [
@@ -38,9 +31,7 @@ export class SummaryService {
             ${textToSummarize}`,
       ];
 
-      console.log(`Input: ${summarizationPrompt}`);
-
-      const deploymentName = 'Verisight-gpt-35-turbo-instruct';
+      console.log(`Input Received`);
 
       const { choices } = await client.getCompletions(
         deploymentName,
@@ -57,7 +48,7 @@ export class SummaryService {
       completion = choices[0].text;
       console.log(`Summarization: ${completion}`);
       //String format on the completion until any ` character is found
-      return completion;
+      return completion.trim();
     }
 
     main().catch((err) => {
