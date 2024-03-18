@@ -3,6 +3,7 @@ import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { Notes } from './schemas/notes.schema';
 import { upvoteDto } from './dto/upvote.dto';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @Controller('notes')
 export class NotesController {
@@ -63,6 +64,7 @@ export class NotesController {
     }
 
     // Get if note is upvoted by user
+    @SkipThrottle()
     @Post('isUpvoted')
     async isUpvoted(
         @Body()
