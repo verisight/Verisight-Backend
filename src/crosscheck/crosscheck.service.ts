@@ -70,6 +70,7 @@ export class CrosscheckService {
     const retriever = new TavilySearchAPIRetriever({
         apiKey: "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",
         k: 6,
+        excludeDomains: ["x.com", "twitter.com", "reddit.com", "facebook.com", "instagram.com", "tiktok.com", "discord.com", "bsky.app"]
     })
 
     // set up the prompt
