@@ -13,7 +13,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
         const userName = username.toLowerCase(); 
         const user = await this.authService.validateUser(userName, password);
         if (!user) {
-          throw new UnauthorizedException();
+          throw new UnauthorizedException('Invalid username or password');
         }
         return user;
       }

@@ -22,6 +22,18 @@ export class UsersController {
   ) {
 
 try{
+  //check if user name already exists 
+  
+  const existingUser = await this.usersService.findUserByUsername(userName);
+    if (existingUser) {
+      throw new BadRequestException('Username already in use');
+    }
+ //check if email already exists 
+    const existingEmail = await this.usersService.findUserByUserEmail(email);
+    if (existingUser) {
+      throw new BadRequestException('Username already in use');
+    }
+
     const hashRounds = 10;
     const hashedPassword = await bcrypt.hash(userPassword, hashRounds);
     const result = await this.usersService.insertUser(
@@ -41,11 +53,13 @@ try{
     };
   } catch (error) {
     // Handle errors
+    console.log(error);
     throw new BadRequestException('Failed to register user');
   }
 }
 
   //login 
+  //using local auth guard to authenticate userbased on username and password 
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
