@@ -14,6 +14,7 @@ export class NotesService {
     GET Method to retrieve all notes for a specific article link
     PUT Method to upvote a specific note if not already voted. If voted then negate the vote
     DELETE Method to delete a specific note
+    Find all the usernotes by userID
      */
 
   constructor(
@@ -118,17 +119,33 @@ export class NotesService {
     return response;
   }
 
-  // Find the usernote by userID
-  async findUserNoteByUserID(note: CreateNoteDto): Promise<Notes> {
+  // Find all the usernotes by userID
+  async getUserNotes(note: CreateNoteDto): Promise<Notes[]> {
     if (!this.noteModel) {
       throw new Error('MongoDB not connected');
     }
 
-    // Find the note by userID
-    const response = await this.noteModel.findOne({ userId: note.userId });
+    // Find all the notes by userID
+    const response = await this.noteModel.find({ userId: note.userId });
 
     if (!response) {
-      console.log('User ID not found');
+      console.log('Note not found');
+    }
+
+    return response;
+  }
+
+  //Get all usernotes in DB
+  async getAllUserNotes(): Promise<Notes[]> {
+    if (!this.noteModel) {
+      throw new Error('MongoDB not connected');
+    }
+
+    // Find all the notes by userID
+    const response = await this.noteModel.find({});
+
+    if (!response) {
+      console.log('Note not found');
     }
 
     return response;
