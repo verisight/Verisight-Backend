@@ -54,7 +54,7 @@ try{
       return { user: req.user, message: 'User logged in' };
     } catch (error) {
  
-      return { error: 'User Login Failed' };
+      return { error: 'User Login Failed',message:'Invalid password or username' };
     }
   }
       
