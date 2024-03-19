@@ -24,7 +24,7 @@ export class UsersService {
       profilePicture,
     });
     await newUser.save();
-    await this.mailService.sendUserConfirmation(username,email);
+   await this.mailService.sendUserConfirmation(username,email);//send email confirmation
     return newUser;
     
   }
