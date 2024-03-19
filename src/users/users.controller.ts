@@ -31,7 +31,7 @@ try{
  //check if email already exists 
     const existingEmail = await this.usersService.findUserByUserEmail(email);
     if (existingUser) {
-      throw new BadRequestException('Username already in use');
+      throw new BadRequestException('Email already in use');
     }
 
     const hashRounds = 10;
@@ -127,6 +127,20 @@ try{
       }
       return { error: 'Failed to change password' };
     }
+  }
+
+//check email 
+  @Post('check-email')
+  async checkEmail(@Body('email') email: string) {
+    const user = await this.usersService.findUserByUserEmail(email);
+    return { exists: Boolean(user) };
+  }
+
+  //check username 
+  @Post('check-username')
+  async checkUsername(@Body('username') username: string) {
+    const user = await this.usersService.findUserByUsername(username);
+    return { exists: Boolean(user) };
   }
 }
 
