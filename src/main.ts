@@ -16,7 +16,7 @@ async function bootstrap() {
       secret: 'verisight',
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: "auto", maxAge: 1000 * 60 * 60 * 24 * 365, sameSite: 'none', httpOnly: false},
+      cookie: { secure: "auto", maxAge: 1000 * 60 * 60 * 24 * 365, sameSite: true, httpOnly: false},
       
     }),
   );
