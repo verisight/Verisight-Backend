@@ -14,7 +14,8 @@ async function bootstrap() {
       secret: 'verisight',
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 * 365 },
+      cookie: { secure: true, maxAge: 1000 * 60 * 60 * 24 * 365, sameSite: 'none', httpOnly: false},
+      
     }),
   );
   app.use(passport.initialize());
