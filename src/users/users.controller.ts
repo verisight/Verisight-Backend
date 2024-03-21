@@ -33,7 +33,7 @@ try{
     if (existingUser) {
       throw new BadRequestException('Email already in use');
     }
-
+    const provider = 'local';
     const hashRounds = 10;
     const hashedPassword = await bcrypt.hash(userPassword, hashRounds);
     const result = await this.usersService.insertUser(
@@ -41,7 +41,8 @@ try{
        hashedPassword,
         email,
         designation,
-        profilePicture
+        profilePicture,
+        provider,
     );
     return {
       msg: 'User successfully registered',

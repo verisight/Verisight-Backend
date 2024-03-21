@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { User } from './schema/users.model';
 import * as bcrypt from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
@@ -17,14 +17,24 @@ export class UsersService {
     email: string,
     designation: string,
     profilePicture: string,
+    provider: string,
   ) {
-    const username = userName.toLowerCase();
+
+    let username = userName.toLowerCase();
+
+    if (provider === 'google' && !(await this.isUserNameUnique(userName))) {
+      const randomNumber = Math.floor(Math.random() * 10000);  
+      username = `${username}-${randomNumber}`;
+    }
+
+
     const newUser = new this.userModel({
       username,
       password,
       email,
       designation,
       profilePicture,
+      provider,
     });
     await newUser.save();
 
@@ -75,6 +85,13 @@ export class UsersService {
   async findUserByUserEmail(email: string) {
     const user = await this.userModel.findOne({ email });
     return user;
+  }
+
+  //unique username check 
+
+  async isUserNameUnique(username: string): Promise<boolean> {
+    const userCount = await mongoose.model('User').countDocuments({ username });
+    return userCount === 0;
   }
 
 }

@@ -1,11 +1,20 @@
 import * as mongoose from "mongoose"
 export const UserSchema = new mongoose.Schema(
   {
+    provider :{
+      type: String,
+      required:true,
+    },
+
+
     username: {
       type: String,
       required: true,
+      unique: true,
       
-    },
+      },
+      
+    
 
     email:{
         type: String,
@@ -14,23 +23,21 @@ export const UserSchema = new mongoose.Schema(
         
 
     },
-
     password: {
       type: String,
-      required: true,
+      required:function(){
+        return this.provider === 'local';
+      }
     },
-
-
     designation:{
         type:String
-
     },
 
     profilePicture:{
-        type:String
-    }
-
-  },
+        type:String,
+    },
+     
+},
   { timestamps: true }
 )
 
@@ -41,4 +48,8 @@ export interface User extends mongoose.Document {
          email: string;
         designation:string;
         profilePicture:string;
+        provider:string;
+        
+        
+       
 }
