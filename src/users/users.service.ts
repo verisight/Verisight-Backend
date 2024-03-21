@@ -10,7 +10,10 @@ import * as bcrypt from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel('user') private readonly userModel: Model<User>,private mailService: MailService) {}
+  constructor(
+    @InjectModel('user') private readonly userModel: Model<User>,
+    private mailService: MailService,
+  ) {}
   async insertUser(
     userName: string,
     password: string,
@@ -64,17 +67,27 @@ export class UsersService {
     await user.save();
   }
 
-  //find user by username 
+  //Change username
+
+  async changeUserName(username: string, newUsername: string) {
+    const user = await this.userModel.findOne({ username });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.username = newUsername;
+    await user.save();
+  }
+
+  //find user by username
 
   async findUserByUsername(userName: string) {
     const username = userName.toLowerCase();
     const user = await this.userModel.findOne({ username });
     return user;
   }
-//find user by email
+  //find user by email
   async findUserByUserEmail(email: string) {
     const user = await this.userModel.findOne({ email });
     return user;
   }
-
 }
