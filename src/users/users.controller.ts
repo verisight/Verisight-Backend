@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Post,
@@ -87,12 +88,14 @@ export class UsersController {
       if (!user) {
         throw new NotFoundException('User not found');
       }
+      const designation = await this.usersService.getDesignation(user.userName);
+      user.designation = designation;
       return user;
     } catch (error) {
       if (error instanceof NotFoundException) {
         return { error: error.message };
       } else {
-        return { error: 'An error occurred while processing the request' };
+        return { error: error };
       }
     }
   }
@@ -155,5 +158,19 @@ export class UsersController {
   async checkUsername(@Body('username') username: string) {
     const user = await this.usersService.findUserByUsername(username);
     return { exists: Boolean(user) };
+  }
+
+  //delete user
+  @Post('delete-user')
+  async deleteUser(@Body('username') username: string) {
+    try {
+      await this.usersService.deleteUser(username);
+      return { message: 'User deleted successfully' };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return { error: 'User not found' };
+      }
+      return { error: 'Failed to delete user' };
+    }
   }
 }

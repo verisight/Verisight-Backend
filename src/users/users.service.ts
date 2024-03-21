@@ -90,4 +90,16 @@ export class UsersService {
     const user = await this.userModel.findOne({ email });
     return user;
   }
+  //Get designation of user
+  async getDesignation(userName: string) {
+    const username = userName.toLowerCase();
+    const user = await this.userModel.findOne({ username });
+    return user.designation;
+  }
+
+  //delete user
+  async deleteUser(username: string) {
+    const user = await this.userModel.findOneAndDelete({ username });
+    return user;
+  }
 }
