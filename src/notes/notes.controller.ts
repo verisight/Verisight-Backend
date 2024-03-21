@@ -5,6 +5,7 @@ import { Notes } from './schemas/notes.schema';
 import { upvoteDto } from './dto/upvote.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('notes')
 export class NotesController {
   /* 
