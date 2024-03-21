@@ -7,7 +7,11 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://auth.verisightlabs.com'],
+    origin: [
+      'http://localhost:5173',
+      'https://auth.verisightlabs.com',
+      'http://localhost:5174',
+    ],
     credentials: true,
   });
   app.set('trust proxy', 1);
@@ -16,8 +20,12 @@ async function bootstrap() {
       secret: 'verisight',
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: "auto", maxAge: 1000 * 60 * 60 * 24 * 365, sameSite: true, httpOnly: false},
-      
+      cookie: {
+        secure: 'auto',
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+        sameSite: true,
+        httpOnly: false,
+      },
     }),
   );
   app.use(passport.initialize());
