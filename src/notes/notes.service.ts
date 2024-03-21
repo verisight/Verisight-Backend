@@ -32,6 +32,7 @@ export class NotesService {
     }
     const existingNote = await this.noteModel.findOne({
       noteContent: note.noteContent,
+      articleLink: note.articleLink,
     });
     if (existingNote) throw new NoteAlreadyExists();
     const response = await this.noteModel.create(note);
