@@ -23,6 +23,7 @@ constructor (){
     });
 }
 
+//authenticates user with google
 //method after user is successfuly authenticated themself with google
 async validate(accessToken:string,refreshToken:string,profile:Profile){
 

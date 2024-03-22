@@ -13,7 +13,7 @@ export class UserDto {
     email: string;
 
 
-
+    
     @IsNotEmpty()
     @MinLength(8)
     password: string;

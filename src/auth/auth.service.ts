@@ -1,6 +1,7 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { UserDetails } from 'src/utils/types';
 
 @Injectable()
 export class AuthService {
@@ -20,5 +21,16 @@ export class AuthService {
       };
     }
     return null;
+  }
+
+  validategoogleUser(details:UserDetails){
+    //search databse for user with email
+    //if user exists return user
+    //if user does not exist create user
+    console.log('AuthService')
+    console.log(details);
+    
+
+
   }
 }
