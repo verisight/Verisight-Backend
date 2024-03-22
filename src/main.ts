@@ -13,6 +13,7 @@ async function bootstrap() {
       'http://localhost:5173',
       'https://auth.verisightlabs.com',
       'http://localhost:5174',
+      'chrome-extension://hejkeenlnjhgdkkocgkfehedbcbioddh',
     ],
     credentials: true,
   });
