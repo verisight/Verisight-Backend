@@ -1,3 +1,9 @@
+/**
+ * This file contains the unit tests for the ArticlesController class.
+ * It tests the functionality of the controller methods such as createArticle, getArticle, getAllArticles, and incongruenceCheck.
+ * The tests are written using the Jest testing framework and the NestJS testing utilities.
+ * The tests use a MongoDB in-memory server for database operations and mock dependencies using Jest's mocking capabilities.
+ */
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { ArticlesController } from './articles.controller';
