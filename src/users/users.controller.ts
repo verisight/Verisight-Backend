@@ -70,15 +70,16 @@ export class UsersController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req): Promise<any> {
+  async login(@Request() req): Promise<any> {//authentication succesful user obj attatched to req
     try {
       return { user: req.user, message: 'User logged in' };
-    } catch (error) {
+    } catch (error) { //catches unauthorized exception thrown  by local authguard if user is not authenticated
       return { error: 'User Login Failed' };
     }
   }
 
   //Protected route
+  //Authenticated guard ensures asll routes are authenticated
 
   @UseGuards(AuthenticatedGuard)
   @Get('/protected')
