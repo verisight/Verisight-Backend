@@ -2,20 +2,19 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Delete,
   Get,
   NotFoundException,
-  Param,
   Post,
-  Redirect,
+  Query,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { LocalAuthGuard } from 'src/auth/local.auth.guard';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard.ts';
-import { response } from 'express';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -105,16 +104,11 @@ export class UsersController {
   }
 
   // Route that takes connect.sid as a parameter
-  @Post('/auth/cookie')
-  async loginWithCookie(@Body() token: string): Promise<any> {
-    try {
-      return {
-        Headers: { Cookie: `connect.sid=${token}` },
-        message: 'User logged in with cookie'
-      };
-    } catch (error) {
-      return { error: 'User Login Failed' };
-    }
+  @Get('auth/cookie')
+  loginWithCookie(@Res({ passthrough: true }) response: Response, @Query('connect.sid') connectSid: string) {
+
+    response.cookie('connect.sid', connectSid)
+    return { message: 'Cookie set' };
   }
 
 
