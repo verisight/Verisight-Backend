@@ -26,7 +26,7 @@ export class AuthService {
     return null;
   }
 
-  validategoogleUser(details:UserDetails){
+  validateGoogleUser(details:UserDetails){
     //search databse for user with email
     //if user exists return user
     //if user does not exist create user

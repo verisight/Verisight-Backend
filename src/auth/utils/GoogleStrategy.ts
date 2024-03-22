@@ -35,8 +35,10 @@ console.log(accessToken);
 console.log(refreshToken);
 console.log(profile);
 
-
-
+const user = await this.authService.validateGoogleUser({
+    email: profile.emails[0].value,
+    displayName: profile.displayName,
+  });
 
 }
 }
