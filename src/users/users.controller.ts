@@ -104,10 +104,10 @@ export class UsersController {
   }
 
   // Route that takes connect.sid as a parameter
-  @Get('auth/cookie')
-  loginWithCookie(@Res({ passthrough: true }) response: Response, @Query('connect.sid') connectSid: string) {
+  @Post('auth/cookie')
+  loginWithCookie(@Res({ passthrough: true }) response: Response, @Query('cookie') cookie: string) {
 
-    response.cookie('connect.sid', connectSid)
+    response.cookie('connect.sid', cookie, { httpOnly: false, sameSite: 'none', secure: true, domain: 'verisightlabs.com' })
     return { message: 'Cookie set' };
   }
 
