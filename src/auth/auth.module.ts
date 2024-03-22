@@ -5,7 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { SessionSerializer } from './session.serializer';
 import { MailModule } from 'src/mail/mail.module';
-import { AuthController } from './auth.controller';
+
 import { GoogleStrategy } from './utils/GoogleStrategy';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/users/schema/users.model';
@@ -19,6 +19,6 @@ import { UserSchema } from 'src/users/schema/users.model';
     provide:"AUTH_SERVICE", //this is the token
     useClass:AuthService,
   }],
-  controllers: [AuthController],
+  controllers: [],
 })
 export class AuthModule {}

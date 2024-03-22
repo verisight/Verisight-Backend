@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { MailModule } from './mail/mail.module';
+import { GoogleStrategy } from './auth/utils/GoogleStrategy';
 
 @Module({
   imports: [
@@ -45,7 +46,9 @@ import { MailModule } from './mail/mail.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+      
     },
+    GoogleStrategy,
   ],
 })
 export class AppModule {}
