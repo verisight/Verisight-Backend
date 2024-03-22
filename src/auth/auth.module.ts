@@ -7,12 +7,17 @@ import { SessionSerializer } from './session.serializer';
 import { MailModule } from 'src/mail/mail.module';
 import { AuthController } from './auth.controller';
 import { GoogleStrategy } from './utils/GoogleStrategy';
+import { MongooseModule } from '@nestjs/mongoose';
 
 
 
 @Module({
-  imports: [UsersModule,PassportModule.register({ session: true }),MailModule],
-  providers: [AuthService,LocalStrategy,SessionSerializer,GoogleStrategy],
+  imports: [UsersModule,PassportModule.register({ session: true }),MailModule,MongooseModule.forRoot(process.env.MONGO_URI)],
+  providers: [AuthService,LocalStrategy,SessionSerializer,GoogleStrategy,UsersModule,
+  {
+    provide:"AUTH_SERVICE", //this is the token
+    useClass:AuthService,
+  }],
   controllers: [AuthController],
 })
 export class AuthModule {}
