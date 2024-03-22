@@ -65,39 +65,39 @@ export class NotesService {
   }
 
   // PUT Method to upvote a specific note if not already voted. If voted then negate the vote
-  async upvoteNoteForArticle(note: CreateNoteDto): Promise<any> {
+  async upvoteNoteForArticle(note: upvoteDto): Promise<any> {
     if (!this.noteModel || !this.upvoteModel) {
       throw new Error('MongoDB not connected');
     }
 
-    //Before allowing a user to upvote a user note, check if there's already an entry in the upvote table for the current user and the note they are trying to upvote.
-    //If there's no existing upvote entry, allow the user to upvote the user note. When processing the upvote, insert a new record into the upvote table with the user's ID and the note's ID.
-
     const existingUpvote = await this.upvoteModel.findOne({
-      noteId: note._id,
+      noteId: note.noteId,
       userId: note.userId,
     });
     if (existingUpvote) {
       const response = await this.noteModel.findOneAndUpdate(
-        { _id: note._id },
+        { _id: note.noteId },
         { $inc: { upvote: -1 } },
       );
       await this.upvoteModel.findOneAndDelete({
-        noteId: note._id,
+        noteId: note.noteId,
         userId: note.userId,
       });
       if (!response) {
-        console.log('Note not upvoted');
+        console.log(response);
       }
       return false;
     } else {
       const response = await this.noteModel.findOneAndUpdate(
-        { _id: note._id },
+        { _id: note.noteId },
         { $inc: { upvote: 1 } },
       );
-      await this.upvoteModel.create({ noteId: note._id, userId: note.userId });
+      await this.upvoteModel.create({
+        noteId: note.noteId,
+        userId: note.userId,
+      });
       if (!response) {
-        console.log('Note not upvoted');
+        console.log(response);
       }
       return true;
     }
@@ -190,7 +190,13 @@ export class NotesService {
       console.log(response);
     }
 
-    response.sort((a, b) => b.upvote - a.upvote);
-    return response[0];
+    if (response.length === 0) {
+      return null;
+    } else if (response.length === 1) {
+      return response[0];
+    } else {
+      response.sort((a, b) => b.upvote - a.upvote);
+      return response[0];
+    }
   }
 }
