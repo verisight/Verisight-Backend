@@ -8,10 +8,18 @@ export class GoogleStrategy extends PassportStrategy(Strategy){
 
 constructor (){
     super({
-        clientID: process.env.GOOGLE_AUTH_CLIENT_ID,
+        clientID:process.env.GOOGLE_AUTH_CLIENT_ID,
         clientSecret:process.env.GOOGLE_AUTH_CLIENT_SECRET,
-        callbackURL:process.env.CALLBACK_URL,
-        scope: ['profile','email'],
+        callbackURL:process.env.CALL_BACK_URL, 
+        scope: ['profile','email']
+
+
+
+       /* clientID:,
+        clientSecret:process.env.GOOGLE_AUTH_CLIENT_SECRET,
+        callbackURL:process.env.CALL_BACK_URL, 
+        scope: ['profile','email'],*/
+
     });
 }
 
