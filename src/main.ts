@@ -21,10 +21,9 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: true,
+        secure: false,
         domain: 'verisightlabs.com',
         maxAge: 1000 * 60 * 60 * 24 * 365,
-        sameSite: 'none',
         httpOnly: false,
       },
     }),
