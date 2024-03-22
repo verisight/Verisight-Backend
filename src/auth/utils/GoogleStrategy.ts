@@ -29,17 +29,23 @@ constructor (
 
 //authenticates user with google
 //method after user is successfuly authenticated themself with google
-async validate(accessToken:string,refreshToken:string,profile:Profile){
-
-console.log(accessToken);
-console.log(refreshToken);
-console.log(profile);
-
-const user = await this.authService.validateGoogleUser({
-    email: profile.emails[0].value,
-    displayName: profile.displayName,
-  });
-
+async validate(accessToken: string, refreshToken: string, profile: Profile) {
+    console.log(accessToken);
+    console.log(refreshToken);
+    console.log(profile);
+  
+    let user;
+    try {
+      user = await this.authService.validateGoogleUser({
+        email: profile.emails[0].value,
+        displayName: profile.displayName,
+      });
+      console.log('Validate');
+    } catch (error) {
+      console.error('Validation Error:', error);
+    }
+  
+    console.log(user);
+    return user || null;
+  }
 }
-}
-
