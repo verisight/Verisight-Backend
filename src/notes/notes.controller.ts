@@ -41,7 +41,7 @@ export class NotesController {
   @Post('upvote')
   async upvoteNote(
     @Body()
-    note: CreateNoteDto,
+    note: upvoteDto,
   ): Promise<Notes> {
     return this.noteService.upvoteNoteForArticle(note);
   }

@@ -151,11 +151,11 @@ export class ArticlesService {
         .then(async (response) => {
           if (response.ok) {
             const jsonResponse = await response.json();
-            await this.updateArticlePrediction(
+            const updatedArticle = await this.updateArticlePrediction(
               article.link,
               jsonResponse.prediction,
             );
-            return jsonResponse;
+            return updatedArticle;
           } else {
             // Print the headers - they include the request ID and the timestamp, which are useful for debugging the failure
             console.debug(...response.headers);
