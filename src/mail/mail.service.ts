@@ -11,13 +11,16 @@ export class MailService {
 
     await this.mailerService.sendMail({
       to: email,
-      // from: '"Support Team" <support@example.com>', // override default from
+    
       subject: 'Welcome to the Verisight Community! ' + username,
-      template: './confirmation', // `.hbs` extension is appended automatically
-      context: { // ✏️ filling curly brackets with content
+      template: './confirmation', 
+      context: { // Data to be sent to template engine.
         user_name: username,
     
       },
     });
   }
 }
+
+
+
