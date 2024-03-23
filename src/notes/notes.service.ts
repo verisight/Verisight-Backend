@@ -113,10 +113,8 @@ export class NotesService {
     const response = await this.noteModel.findOneAndDelete({ _id: note._id });
     const response1 = await this.upvoteModel.deleteMany({ noteId: note._id });
 
-    if (!response && !response1) {
-      console.log('Note not deleted');
-    } else {
-      console.log('Note deleted');
+    if (!response || !response1) {
+      console.log('Note not found');
     }
 
     return response;
@@ -149,8 +147,6 @@ export class NotesService {
 
     if (!response) {
       console.log('Note not found');
-    } else {
-      console.log(response);
     }
 
     return response;

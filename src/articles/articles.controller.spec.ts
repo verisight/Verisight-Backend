@@ -37,7 +37,9 @@ describe('ArticlesController', () => {
               switch (key) {
                 // add the keys that ArticlesService depends on
                 case 'INCONGRUENCE_API_KEY':
-                  return 'mock-key';
+                  return 'nS0cCwq6HjzabpBKJ9lu0MqrSCvCBdbW';
+                case 'INCONGRUENCE_ENDPOINT':
+                  return 'https://incongruence-detect.eastus.inference.ml.azure.com/score';
                 default:
                   return null;
               }
