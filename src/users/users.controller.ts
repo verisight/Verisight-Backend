@@ -120,10 +120,25 @@ export class UsersController {
     } else {
       return response.json();
     }
-
   }
 
+  // logout route that takes connect.sid as a parameter
+  @Post('auth/cookielogout')
+  async logoutWithCookie(@Request() req, @Body () {session} : {session: string}) {
+    const response = await fetch('http://localhost:3000/users/logout', {
+      method: 'GET',
+      headers: {
+        Cookie: `connect.sid=${session}`
+      }
+    })
 
+    if (!response.ok) {
+      throw new ForbiddenException();
+    } else {
+      return response.json();
+    }
+
+  }
 
   // logout
   @Get('/logout')
