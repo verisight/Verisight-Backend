@@ -13,9 +13,13 @@ export class ArticlesService {
     private configService: ConfigService,
   ) {}
 
+  /**
+   * Find an article by its link.
+   * @param link1 - The link of the article.
+   * @returns The found article.
+   * @throws Error if MongoDB is not connected.
+   */
   async findArticleByLink(link1: string): Promise<any> {
-    //Find the article by link from the MongoDB
-    //Check if MongoDB is connected
     if (!this.articleModel) {
       throw new Error('MongoDB not connected');
     }
@@ -26,8 +30,13 @@ export class ArticlesService {
     return response;
   }
 
+  /**
+   * Find an article by its DTO.
+   * @param article - The DTO of the article.
+   * @returns The found article.
+   * @throws Error if MongoDB is not connected.
+   */
   async findArticleByDto(article: CreateArticleDto): Promise<any> {
-    //Find the article by link from the MongoDB
     //Check if MongoDB is connected
     if (!this.articleModel) {
       throw new Error('MongoDB not connected');
@@ -39,6 +48,12 @@ export class ArticlesService {
     return response;
   }
 
+  /**
+   * Update an article.
+   * @param link - The link of the article to update.
+   * @param article - The updated article object.
+   * @returns The updated article.
+   */
   async updateArticle(link: String, article: Articles): Promise<Articles> {
     // Logic to update article in MongoDB
     const updatedArticle = await this.articleModel.findOneAndUpdate(
@@ -49,11 +64,16 @@ export class ArticlesService {
     return updatedArticle;
   }
 
+  /**
+   * Update the prediction of an article.
+   * @param link - The link of the article to update.
+   * @param prediction - The new prediction value.
+   * @returns The updated article.
+   */
   async updateArticlePrediction(
     link: String,
     prediction: number,
   ): Promise<any> {
-    // Logic to update article prediction in MongoDB
     const updatedArticle = await this.articleModel.findOneAndUpdate(
       { link: link },
       { prediction: prediction },
@@ -62,15 +82,23 @@ export class ArticlesService {
     return updatedArticle;
   }
 
+  /**
+   * Create a new article.
+   * @param article - The article object to create.
+   */
   async createArticle(article: Articles): Promise<any> {
-    // Logic to create article in MongoDB
-    //Check if MongoDB is connected
     if (!this.articleModel) {
       throw new Error('MongoDB not connected');
     }
     await this.articleModel.create(article);
   }
 
+  /**
+   * Handle the post request for an article.
+   * @param article - The article object to handle.
+   * @returns The handled article.
+   * @throws Error if the article data is invalid.
+   */
   async handleArticlePost(article: Articles): Promise<any> {
     if (
       !article.link &&
@@ -103,13 +131,22 @@ export class ArticlesService {
     }
   }
 
+  /**
+   * Get all articles.
+   * @returns An array of articles.
+   */
   async getAllArticles(): Promise<Articles[]> {
     const article = await this.articleModel.find();
     return article;
   }
 
+  /**
+   * Get an article by its link.
+   * @param link - The link of the article.
+   * @returns The found article.
+   * @throws Error if the article link is invalid.
+   */
   async getArticle(link: string): Promise<any> {
-    // Logic to get article from Cosmos DB
     if (!link) {
       throw new Error('Invalid article link');
     }
@@ -117,8 +154,13 @@ export class ArticlesService {
     return response;
   }
 
+  /**
+   * Perform an incongruence check on an article.
+   * @param article - The article to perform the check on.
+   * @returns The updated article.
+   * @throws Error if a key is not provided to invoke the endpoint.
+   */
   async incongruenceCheck(article: Articles): Promise<any> {
-    // Logic to check if article data is incongruent
     if (article.title && article.content) {
       //Call a POST Function to Azure API for ML Model
       const requestBody = {

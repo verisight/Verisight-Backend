@@ -18,6 +18,7 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     ArticlesModule,
     SummaryModule,
+    // Add the ConfigModule to the import the environment variables
     ConfigModule.forRoot({
       envFilePath: './.env',
       isGlobal: true,
@@ -25,7 +26,8 @@ import { MailModule } from './mail/mail.module';
     MongooseModule.forRoot(process.env.MONGO_URI),
     CrosscheckModule,
     NotesModule,
-    UsersModule, //added a comma
+    UsersModule,
+    // Add the ThrottlerModule to rate limit the API
     ThrottlerModule.forRoot([
       {
         name: 'short-term',
@@ -37,7 +39,8 @@ import { MailModule } from './mail/mail.module';
         ttl: 60000,
         limit: 100,
       },
-    ]), MailModule,
+    ]),
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
