@@ -53,13 +53,13 @@ export class CrosscheckService {
     const tools = [asOpenAITool];
 
     const llm = new ChatOpenAI({
-      temperature: 0.5,
-      azureOpenAIApiKey: this.configService.get('CROSSCHECK_API_KEY'),
-      azureOpenAIApiVersion: this.configService.get('CROSSCHECK_API_VERSION'),
-      azureOpenAIApiDeploymentName: this.configService.get(
-        'CROSSCHECK_API_DEPLOYMENT_NAME',
-      ),
-      azureOpenAIBasePath: this.configService.get('CROSSCHECK_API_ENDPOINT'),
+      openAIApiKey: this.configService.get('CROSSCHECK_API_KEY'),
+      configuration: {
+        baseURL: this.configService.get('CROSSCHECK_API_ENDPOINT'),
+        apiKey: this.configService.get('CROSSCHECK_API_KEY'),
+        defaultQuery: { 'api-version': this.configService.get('CROSSCHECK_API_VERSION') },
+        defaultHeaders: { 'api-key': this.configService.get('CROSSCHECK_API_KEY') },
+      },
     });
 
     // bind the tool to the llm and set the tool_choice to the OpenAI tool
