@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
   Post,
@@ -114,7 +115,11 @@ export class UsersController {
       }
     })
 
-    return response.json();
+    if (!response.ok) {
+      throw new ForbiddenException();
+    } else {
+      return response.json();
+    }
 
   }
 
