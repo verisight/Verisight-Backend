@@ -15,6 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { LocalAuthGuard } from 'src/auth/local.auth.guard';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard.ts';
 import { Response } from 'express';
+import { Store } from 'express-session';
 
 @Controller('users')
 export class UsersController {
@@ -98,17 +99,23 @@ export class UsersController {
       if (error instanceof NotFoundException) {
         return { error: error.message };
       } else {
-        return { error: error };
+        return { error: 'Failed to get user'};
       }
     }
   }
 
   // Route that takes connect.sid as a parameter
   @Post('auth/cookie')
-  loginWithCookie(@Res({ passthrough: true }) response: Response, @Query('cookie') cookie: string) {
+  async loginWithCookie(@Request() req, @Body () {session} : {session: string}) {
+    const response = await fetch('http://localhost:3000/users/protected', {
+      method: 'GET',
+      headers: {
+        Cookie: `connect.sid=${session}`
+      }
+    })
 
-    response.cookie('connect.sid', cookie, { httpOnly: false, sameSite: 'none', secure: true, domain: 'verisightlabs.com' })
-    return { message: 'Cookie set' };
+    return response.json();
+
   }
 
 
