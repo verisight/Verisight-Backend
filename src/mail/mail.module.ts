@@ -6,7 +6,7 @@ import { join } from 'path';
 import {  ConfigService } from '@nestjs/config';
 
 
-
+//Global decorator  so that this module can be used without being imported
 @Global()
 @Module({
   imports: [
@@ -15,9 +15,10 @@ import {  ConfigService } from '@nestjs/config';
       useFactory: async (config: ConfigService) => ({
         // transport: config.get("MAIL_TRANSPORT"),
         // or
+                // Setting up the transport configuration for the mailer
         transport: {
           host: config.get('MAIL_HOST'),
-          secure: false,
+          secure: false, // If true the connection will use TLS when connecting to server
           auth: {
             user: config.get('MAIL_USER'),
             pass: config.get('MAIL_PASSWORD'),
@@ -28,8 +29,8 @@ import {  ConfigService } from '@nestjs/config';
           from: `"No Reply" <${config.get('MAIL_FROM')}>`,
         },
         template: {
-          dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(),
+          dir: join(__dirname, 'templates'),  // Directory for mail templates
+          adapter: new HandlebarsAdapter(), // Adapter to use for templates
           options: {
             strict: true,
           },
