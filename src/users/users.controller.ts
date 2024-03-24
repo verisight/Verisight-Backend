@@ -107,7 +107,7 @@ export class UsersController {
 
   // Route that takes connect.sid as a parameter
   @Post('auth/cookie')
-  async loginWithCookie(@Request() req, @Body () {session} : {session: string}) {
+  async loginWithCookie(@Request() req, @Body () {session} : {session: string},@Res() res: Response) {
     const response = await fetch('http://localhost:3000/users/protected', {
       method: 'GET',
       headers: {
@@ -118,13 +118,14 @@ export class UsersController {
     if (!response.ok) {
       throw new ForbiddenException();
     } else {
-      return response.json();
+      const responseBody = await response.json();
+    return res.status(200).json(responseBody);
     }
   }
 
   // logout route that takes connect.sid as a parameter
   @Post('auth/cookielogout')
-  async logoutWithCookie(@Request() req, @Body () {session} : {session: string}) {
+  async logoutWithCookie(@Request() req, @Body () {session} : {session: string},@Res() res: Response) {
     const response = await fetch('http://localhost:3000/users/logout', {
       method: 'GET',
       headers: {
@@ -135,7 +136,9 @@ export class UsersController {
     if (!response.ok) {
       throw new ForbiddenException();
     } else {
-      return response.json();
+      
+      const responseBody = await response.json();
+      return res.status(200).json(responseBody);
     }
 
   }
