@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller,  Post } from '@nestjs/common';
 import { SummaryService } from './summary.service';
 import { CreateArticleDto } from '../articles/dto/create-article.dto';
 import { ArticlesService } from '../articles/articles.service';
@@ -18,12 +18,5 @@ export class SummaryController {
         return summary;
     }
 
-    //GET Request which cotains the link in the route.
-    @Get(':id')
-    async findArticle(@Param('id') id : string){
-        console.log(`Finding article with link: ${id}`)
-        const response = await this.articleService.findArticleByLink(id);
-        const summary = this.summaryService.createSummary(response);
-        return summary;
-    }
+    
 }
