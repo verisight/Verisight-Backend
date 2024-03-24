@@ -31,12 +31,9 @@ export class NotesController {
 
   // GET Method to retrieve all notes for a specific article link
   @Post('all')
-  async getAllNotes(
-    @Body() note: CreateNoteDto,
-    @Res() res: Response
-  ): Promise<any> {
+  async getAllNotes(@Body() note: CreateNoteDto): Promise<any> {
     const notes = await this.noteService.getAllNotesForArticle(note);
-    return res.status(200).json(notes);
+    return notes;
   }
 
   // PUT Method to upvote a specific note if not already voted. If voted then negate the vote
