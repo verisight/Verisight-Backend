@@ -188,29 +188,30 @@ export class UsersController {
 
   //check email
   @Post('check-email')
-  async checkEmail(@Body('email') email: string) {
+  async checkEmail(@Body('email') email: string,@Res() res: Response) {
     const user = await this.usersService.findUserByUserEmail(email);
-    return { exists: Boolean(user) };
+    return res.status(200).json({ exists: Boolean(user) });
   }
 
   //check username
   @Post('check-username')
-  async checkUsername(@Body('username') username: string) {
+  async checkUsername(@Body('username') username: string,@Res() res: Response) {
     const user = await this.usersService.findUserByUsername(username);
-    return { exists: Boolean(user) };
+    return res.status(200).json({ exists: Boolean(user) });
   }
+
 
   //delete user
   @Post('delete-user')
-  async deleteUser(@Body('username') username: string) {
+  async deleteUser(@Body('username') username: string,@Res() res: Response) {
     try {
       await this.usersService.deleteUser(username);
-      return { message: 'User deleted successfully' };
+      return res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
       if (error instanceof NotFoundException) {
-        return { error: 'User not found' };
+        return res.status(404).json({ error: 'User not found' });
       }
-      return { error: 'Failed to delete user' };
+      return res.status(500).json({ error: 'Failed to delete user' });
     }
   }
 }
