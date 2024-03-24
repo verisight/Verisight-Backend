@@ -23,11 +23,16 @@ export class ArticlesService {
     if (!this.articleModel) {
       throw new Error('MongoDB not connected');
     }
-    const response = await this.articleModel.findOne({ link: link1 });
-    if (!response) {
-      console.log('Article not found');
+
+    if (link1) {
+      const response = await this.articleModel.findOne({ link: link1 });
+      if (!response) {
+        console.debug('Article not found');
+      }
+      return response;
+    } else {
+      throw new Error('Invalid article link');
     }
-    return response;
   }
 
   /**
@@ -43,7 +48,7 @@ export class ArticlesService {
     }
     const response = await this.articleModel.findOne({ link: article.link });
     if (!response) {
-      console.log('Article not found');
+      console.debug('Article not found');
     }
     return response;
   }
@@ -112,10 +117,8 @@ export class ArticlesService {
     const existingArticle = await this.findArticleByLink(article.link);
 
     if (existingArticle) {
-      console.log('Article Link exists in the DB');
       // Article exists, check if date published is different
       if (existingArticle.datePublished !== article.datePublished) {
-        console.log('Article Link exists but date is updated');
         await this.updateArticle(existingArticle.link, article);
         await this.incongruenceCheck(article);
         return this.findArticleByLink(article.link);
@@ -123,11 +126,14 @@ export class ArticlesService {
         return existingArticle;
       }
     } else {
-      console.log('Article Link does not exist');
       // Article doesn't exist, create new article
-      await this.createArticle(article);
-      await this.incongruenceCheck(article);
-      return this.findArticleByLink(article.link);
+      if (article.link) {
+        await this.createArticle(article);
+        await this.incongruenceCheck(article);
+        return this.findArticleByLink(article.link);
+      } else {
+        throw new Error('Invalid article link');
+      }
     }
   }
 
@@ -161,7 +167,7 @@ export class ArticlesService {
    * @throws Error if a key is not provided to invoke the endpoint.
    */
   async incongruenceCheck(article: Articles): Promise<any> {
-    if (article.title && article.content) {
+    if (article.title && article.content && article.link) {
       //Call a POST Function to Azure API for ML Model
       const requestBody = {
         headline: article.title,
@@ -207,10 +213,11 @@ export class ArticlesService {
             );
           }
         })
-        .then((json) => console.log(json))
         .catch((error) => {
           console.error(error);
         });
+    } else {
+      throw new Error('Invalid article data');
     }
   }
 }
