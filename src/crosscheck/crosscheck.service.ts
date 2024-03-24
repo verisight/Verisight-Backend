@@ -87,6 +87,7 @@ export class CrosscheckService {
         'discord.com',
         'bsky.app',
         'quora.com',
+        'vnexplorer.net'
       ],
     });
 
