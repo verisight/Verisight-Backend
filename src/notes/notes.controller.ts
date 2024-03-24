@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { Notes } from './schemas/notes.schema';
 import { upvoteDto } from './dto/upvote.dto';
 import { SkipThrottle } from '@nestjs/throttler';
+import { Response } from 'express';
 
 @SkipThrottle()
 @Controller('notes')
@@ -31,10 +32,11 @@ export class NotesController {
   // GET Method to retrieve all notes for a specific article link
   @Post('all')
   async getAllNotes(
-    @Body()
-    note: CreateNoteDto,
-  ): Promise<Notes[]> {
-    return this.noteService.getAllNotesForArticle(note);
+    @Body() note: CreateNoteDto,
+    @Res() res: Response
+  ): Promise<any> {
+    const notes = await this.noteService.getAllNotesForArticle(note);
+    return res.status(200).json(notes);
   }
 
   // PUT Method to upvote a specific note if not already voted. If voted then negate the vote
